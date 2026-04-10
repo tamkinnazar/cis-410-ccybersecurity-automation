@@ -32,3 +32,10 @@ infrastructure as code, and cloud deployment.
 ## Fun Fact
 
 [Reading books, long walks]
+
+
+Runner VM: tamkin-runner
+
+Runner IP: YOUR-RUNNER-IP 192.168.1.112
+
+Pipeline status: [![Hello Pipeline](https://github.com/tamkinnazar/cis-410-cybersecurity-automation/actions/workflows/hello-pipeline.yml/badge.svg)](https://github.com/YOUR-USERNAME/cis-410-cybersecurity-automation/actions/workflows/hello-pipeline.yml)
