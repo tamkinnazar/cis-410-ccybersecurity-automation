@@ -162,3 +162,4 @@ jobs:
           curl -f "http://${{ secrets.DEV_HOST }}:5000/health" | python3 -m json.tool
 
           echo "=== Smoke test passed — app is live at http://${{ secrets.DEV_HOST }}:5000 ==="
+    
