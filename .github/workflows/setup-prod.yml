@@ -1,0 +1,66 @@
+# .github/workflows/setup-prod.yml
+# ONE-TIME: configures passwordless sudo and installs Docker on yourname-prod.
+
+
+name: "Setup — Production Server"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    name: "Install Docker on Production VM"
+    runs-on: self-hosted
+    steps:
+
+      - name: Configure passwordless sudo
+        run: |
+          echo "${{ secrets.PROD_SSH_KEY }}" > /tmp/prod_key
+          chmod 600 /tmp/prod_key
+          ssh -i /tmp/prod_key -o StrictHostKeyChecking=no \
+            ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} \
+            "if sudo -n true 2>/dev/null; then
+              echo '=== Passwordless sudo already configured ==='
+            else
+              echo '${{ secrets.SUDO_PASS }}' | sudo -S bash -c \
+                'echo \"${{ secrets.PROD_USER }} ALL=(ALL) NOPASSWD:ALL\" > /etc/sudoers.d/${{ secrets.PROD_USER }} && chmod 0440 /etc/sudoers.d/${{ secrets.PROD_USER }}'
+              echo '=== Passwordless sudo configured ==='
+            fi"
+          rm /tmp/prod_key
+
+      - name: Install Docker on Production VM
+        run: |
+          echo "${{ secrets.PROD_SSH_KEY }}" > /tmp/prod_key
+          chmod 600 /tmp/prod_key
+          ssh -i /tmp/prod_key -o StrictHostKeyChecking=no \
+            ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} << 'EOF'
+          set -e
+          if ! command -v docker &> /dev/null; then
+            echo "=== Docker not found — installing ==="
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sudo sh get-docker.sh
+            sudo usermod -aG docker $(whoami)
+            sudo mkdir -p /opt/app && sudo chown $(whoami):$(whoami) /opt/app
+            rm get-docker.sh
+            echo "=== Docker installed successfully ==="
+          else
+            echo "=== Docker already present — skipping ==="
+            sudo mkdir -p /opt/app && sudo chown $(whoami):$(whoami) /opt/app
+          fi
+          EOF
+          rm /tmp/prod_key
+
+      - name: Verify Docker
+        run: |
+          echo "${{ secrets.PROD_SSH_KEY }}" > /tmp/prod_key
+          chmod 600 /tmp/prod_key
+          ssh -i /tmp/prod_key -o StrictHostKeyChecking=no \
+            ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} << 'EOF'
+          set -e
+          echo "=== Logged in as: $(whoami) ==="
+          docker --version
+          docker compose version
+          ls -la /opt/app
+          echo "=== Production server is ready for deployment ==="
+          EOF
+          rm /tmp/prod_key
