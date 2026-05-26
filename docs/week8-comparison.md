@@ -11,19 +11,13 @@
 
 
 Which approach required more manual steps?
-
 The on-premise Docker approach required more manual steps because I had to SSH into VMs, install Docker, build images, and run containers manually. Cloud Run removed these steps by automatically deploying the container using Terraform and GitHub Actions.
 
-
 How do you know which version is running in production?
-
 In on-premise Docker, I had to manually check running containers and images on the VM. In Cloud Run, I can track the exact version using the commit SHA tag in Artifact Registry and Cloud Run revision history, making it easier to verify the deployed version.
 
-
 What is the security advantage of scale-to-zero?
-
 Scale-to-zero reduces the attack surface because there are no running containers when there is no traffic. This means fewer exposed services and reduced risk of exploitation compared to always-running VMs.
 
 What attack surface was removed by OIDC?
-
 OIDC removed the need for SSH keys and long-lived service account keys. This reduces the risk of leaked credentials because authentication is short-lived and automatically managed by GitHub and Google Cloud.
