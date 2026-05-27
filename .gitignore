@@ -6,3 +6,4 @@ crash.log
 
 # Terraform lock only is OK
 !*.tf
+terraform.tfvars
